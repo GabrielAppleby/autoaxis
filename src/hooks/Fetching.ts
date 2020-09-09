@@ -4,7 +4,7 @@ interface FetchFunction<T> {
     (url: string): Promise<T>;
 }
 
-function useFetching<T>(url: string, fetchFunc: FetchFunction<T>) {
+function useFetching<T>(url: string, fetchFunc: FetchFunction<T>, request: boolean) {
     const [loading, setLoading] = useState(true);
     const [results, setResults] = useState<undefined | T>(undefined);
     const [error, setError] = useState("");
@@ -23,9 +23,10 @@ function useFetching<T>(url: string, fetchFunc: FetchFunction<T>) {
             }
             setLoading(false);
         }
-
-        fetchData();
-    }, [url, fetchFunc]);
+        if (request) {
+            fetchData();
+        }
+    }, [url, fetchFunc, request]);
 
     return {
         error,
@@ -34,8 +35,8 @@ function useFetching<T>(url: string, fetchFunc: FetchFunction<T>) {
     };
 }
 
-export function useDataFetching(url: string) {
+export function useDataFetching(url: string, request: boolean) {
     const cFetch = useCallback(fetch, [])
 
-    return useFetching<Response>(url, cFetch);
+    return useFetching<Response>(url, cFetch, request);
 }
